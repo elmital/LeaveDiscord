@@ -1,0 +1,59 @@
+plugins {
+    id "java"
+    id 'application'
+    id "com.github.johnrengelman.shadow" version "7.1.2" //Dependency shadow
+}
+
+
+//Plugin information
+group 'be.elmital.leaveDiscord'
+version '1.0-SNAPSHOT'
+
+mainClassName = group + '.leaveDiscord'
+
+defaultTasks 'build'
+
+//Java version
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+
+//Dependencies repositories
+repositories {
+    mavenCentral()
+    //Discord API
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+}
+
+//Dependencies
+dependencies {
+    implementation group: 'net.dv8tion', name: 'JDA', version: '4.2.1_260' //Discord
+    implementation group: 'com.neovisionaries', name: 'nv-websocket-client' //Discord
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.17.2'
+}
+
+//Tasks
+tasks.compileJava {
+    options.compilerArgs = ["-parameters"]
+    options.encoding = 'UTF-8'
+}
+
+//Shadowing dependencies
+shadowJar {
+    archiveClassifier.set('')
+    manifest {
+        attributes(
+                'Main-Class': {group}
+        )
+    }
+}
+
+//Shadow
+artifacts {
+    archives shadowJar
+}
+
+build.dependsOn(shadowJar)
